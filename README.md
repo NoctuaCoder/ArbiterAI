@@ -19,9 +19,9 @@
 > **⚠️ ORIGINAL PROJECT NOTICE**
 > 
 > **ArbiterAI** is an original work by [NoctuaCoder](https://github.com/NoctuaCoder)  
-> **First Published**: November 27, 2024  
+> **First Published**: November 27, 2025  
 > **Original Repository**: https://github.com/NoctuaCoder/ArbiterAI  
-> **Project ID**: ARBITER-2024-NOCTUACODER-PLATFORM
+> **Project ID**: ARBITER-2025-NOCTUACODER-PLATFORM
 > 
 > This project is protected under MIT License with attribution requirements.  
 > Any use, modification, or distribution must credit the original author.  
@@ -395,8 +395,8 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 ---
 
-**© 2024 NoctuaCoder. Original work protected under MIT License.**
+**© 2025 NoctuaCoder. Original work protected under MIT License.**
 
-**Project ID**: ARBITER-2024-NOCTUACODER-PLATFORM
+**Project ID**: ARBITER-2025-NOCTUACODER-PLATFORM
 
 </div>
