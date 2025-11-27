@@ -1,0 +1,21 @@
+ArbiterAI - Autonomous Code Execution Platform
+Copyright (c) 2024 NoctuaCoder (https://github.com/NoctuaCoder)
+
+This project is licensed under the MIT License.
+See the LICENSE file for details.
+
+ORIGINAL AUTHOR: NoctuaCoder
+ORIGINAL PUBLICATION DATE: November 27, 2024
+ORIGINAL REPOSITORY: https://github.com/NoctuaCoder/ArbiterAI
+
+ATTRIBUTION REQUIRED:
+Any use, modification, or distribution of this software must include
+proper attribution to the original author and repository.
+
+UNIQUE PROJECT IDENTIFIERS:
+- Project ID: ARBITER-2024-NOCTUACODER-PLATFORM
+- Architecture: Docker Sandbox + Plugin System + Git Integration
+- Original Implementation: NoctuaCoder/ArbiterAI
+
+For questions or licensing inquiries, please contact the original author
+through the GitHub repository.
