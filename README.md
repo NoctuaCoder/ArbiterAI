@@ -7,6 +7,8 @@
 ![Docker](https://img.shields.io/badge/Docker-Required-2496ED?style=for-the-badge&logo=docker)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Production_Ready-success?style=for-the-badge)
+![Cost](https://img.shields.io/badge/Cost-$0_Forever-00BFFF?style=for-the-badge)
+![Local](https://img.shields.io/badge/100%25_Local-Privacy_First-blueviolet?style=for-the-badge)
 
 **The ONLY platform combining real code execution, Docker isolation, plugin extensibility, and Git integration. 100% local, zero API costs.**
 
