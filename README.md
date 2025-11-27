@@ -1,8 +1,8 @@
-# 🦉 ArbiterAI v4.0 - The Docker for AI Code Agents
-
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-4.0-blueviolet?style=for-the-badge)
+![ArbiterAI Header](./header-arbiter.svg)
+
+![Version](https://img.shields.io/badge/version-5.0-blueviolet?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.11+-blue?style=for-the-badge&logo=python)
 ![Docker](https://img.shields.io/badge/Docker-Required-2496ED?style=for-the-badge&logo=docker)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
@@ -10,7 +10,7 @@
 
 **The ONLY platform combining real code execution, Docker isolation, plugin extensibility, and Git integration. 100% local, zero API costs.**
 
-[🚀 Quick Start](#-quick-start) | [⚡ What Makes Us Unique](#-what-makes-us-unique) | [🔌 Plugin System](#-plugin-system) | [📖 Documentation](#-documentation)
+[🚀 Quick Start](#-quick-start) | [💰 Why ArbiterAI](#-why-arbiterai-save-thousands) | [⚡ What Makes Us Unique](#-what-makes-us-unique) | [🎯 Use Cases](#-use-cases) | [🔌 Plugin System](#-plugin-system)
 
 </div>
 
@@ -26,6 +26,25 @@
 > This project is protected under MIT License with attribution requirements.  
 > Any use, modification, or distribution must credit the original author.  
 > See [NOTICE](NOTICE) file for full copyright information.
+
+---
+
+## 💰 Why ArbiterAI? Save Thousands!
+
+<div align="center">
+
+### 💸 **Cost Comparison** - Why Pay When You Can Own?
+
+| Platform | Monthly Cost | Annual Cost | **You Pay** |
+|----------|-------------|-------------|-------------|
+| **Cursor** | $20/month | $240/year | 💸 💸 |
+| **GitHub Copilot** | $10/month | $120/year | 💸 |
+| **Devin** | $500/month | $6,000/year | 💸 💸 💸 💸 💸 💸 |
+| **ArbiterAI** | **$0/month** | **$0/year** | **✅ FREE** |
+
+</div>
+
+> 🎯 **Save $120-$6,000/year** while keeping your code 100% private and local!
 
 ---
 
@@ -168,6 +187,69 @@ Agent:
    2  | Bob   | bob@example.com
    3  | Carol | carol@example.com
 ```
+
+---
+
+## 🎯 Use Cases
+
+### 🔧 DevOps & Infrastructure
+
+```bash
+User: "Set up a complete CI/CD pipeline with GitHub Actions"
+
+Agent:
+✅ Created .github/workflows/ci.yml
+✅ Configured Docker build and push
+✅ Added automated testing
+✅ Set up deployment to production
+✅ Committed and pushed to repository
+```
+
+**Perfect for**: Infrastructure automation, deployment scripts, container orchestration
+
+### 📊 Data Science & Analytics
+
+```python
+User: "Analyze this CSV dataset and create visualizations"
+
+Agent:
+✅ Loaded data with pandas
+✅ Performed exploratory data analysis
+✅ Created 5 visualization plots
+✅ Generated statistical summary
+✅ Saved results to analysis/ directory
+```
+
+**Perfect for**: Data exploration, ML model training, automated reporting
+
+### 🌐 Web Development
+
+```javascript
+User: "Scaffold a React + FastAPI project with authentication"
+
+Agent:
+✅ Created React frontend with Vite
+✅ Set up FastAPI backend
+✅ Implemented JWT authentication
+✅ Added user registration/login
+✅ Configured CORS and middleware
+✅ Created Docker Compose setup
+```
+
+**Perfect for**: Full-stack development, API creation, rapid prototyping
+
+---
+
+## 🌟 As Seen On
+
+<div align="center">
+
+[![Perplexity AI](https://img.shields.io/badge/Featured_on-Perplexity_AI-00BFFF?style=for-the-badge&logo=ai&logoColor=white)](https://www.perplexity.ai)
+[![Reddit](https://img.shields.io/badge/Discussed_on-r/LocalLLaMA-FF4500?style=for-the-badge&logo=reddit&logoColor=white)](https://www.reddit.com/r/LocalLLaMA/)
+
+*"ArbiterAI combines Docker isolation with AI code agents for enterprise-grade security"* - Perplexity AI
+
+</div>
 
 ---
 
