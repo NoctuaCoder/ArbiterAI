@@ -13,6 +13,14 @@ from typing import Dict, Any, List, Optional
 from pathlib import Path
 import shlex
 
+# Try to import DockerSandbox, fallback if not available
+try:
+    from sandbox_manager import DockerSandbox
+    DOCKER_AVAILABLE = True
+except ImportError:
+    DOCKER_AVAILABLE = False
+    DockerSandbox = None
+
 
 class ToolExecutionResult:
     """Result of a tool execution."""
@@ -57,17 +65,36 @@ class ShellExecutor:
         'docker', 'docker-compose'
     ]
     
-    def __init__(self, workspace: str = "/tmp/arbiter_workspace", use_whitelist: bool = True):
+    def __init__(self, workspace: str = "/tmp/arbiter_workspace", 
+                 use_whitelist: bool = True,
+                 use_docker: bool = None):
         """
         Initialize ShellExecutor.
         
         Args:
             workspace: Directory where commands will be executed
             use_whitelist: If True, only whitelisted commands are allowed
+            use_docker: If True, use Docker sandbox. If None, auto-detect from env
         """
         self.workspace = Path(workspace)
         self.workspace.mkdir(parents=True, exist_ok=True)
         self.use_whitelist = use_whitelist
+        
+        # Determine if Docker should be used
+        if use_docker is None:
+            use_docker = os.getenv('USE_DOCKER_SANDBOX', 'false').lower() == 'true'
+        
+        self.use_docker = use_docker and DOCKER_AVAILABLE
+        self.docker_sandbox = None
+        
+        if self.use_docker:
+            try:
+                self.docker_sandbox = DockerSandbox(str(workspace))
+                print(f"🐳 Docker sandbox enabled for shell execution")
+            except Exception as e:
+                print(f"⚠️ Docker sandbox failed to initialize: {e}")
+                print(f"   Falling back to direct execution")
+                self.use_docker = False
     
     def _is_safe_command(self, command: str) -> tuple[bool, str]:
         """
@@ -111,6 +138,25 @@ class ShellExecutor:
                 error=f"🚫 Command blocked: {reason}"
             )
         
+        # Use Docker sandbox if available
+        if self.use_docker and self.docker_sandbox:
+            try:
+                result = self.docker_sandbox.execute(command, timeout)
+                return ToolExecutionResult(
+                    success=result.success,
+                    output=result.stdout,
+                    error=result.stderr,
+                    data={
+                        "exit_code": result.exit_code,
+                        "execution_time": result.execution_time,
+                        "sandbox": "docker"
+                    }
+                )
+            except Exception as e:
+                # Fallback to direct execution on Docker error
+                print(f"⚠️ Docker execution failed: {e}, falling back to direct")
+        
+        # Direct execution (fallback or default)
         try:
             result = subprocess.run(
                 command,
@@ -125,14 +171,14 @@ class ShellExecutor:
                 return ToolExecutionResult(
                     success=True,
                     output=result.stdout,
-                    data={"exit_code": result.returncode}
+                    data={"exit_code": result.returncode, "sandbox": "direct"}
                 )
             else:
                 return ToolExecutionResult(
                     success=False,
                     output=result.stdout,
                     error=result.stderr,
-                    data={"exit_code": result.returncode}
+                    data={"exit_code": result.returncode, "sandbox": "direct"}
                 )
                 
         except subprocess.TimeoutExpired:
@@ -375,9 +421,9 @@ class Toolbox:
     Main toolbox that combines all tools.
     """
     
-    def __init__(self, workspace: str = "/tmp/arbiter_workspace"):
+    def __init__(self, workspace: str = "/tmp/arbiter_workspace", use_docker: bool = None):
         self.workspace = workspace
-        self.shell = ShellExecutor(workspace)
+        self.shell = ShellExecutor(workspace, use_docker=use_docker)
         self.files = FileManager(workspace)
         self.web = WebFetcher()
     
