@@ -21,6 +21,14 @@ except ImportError:
     DOCKER_AVAILABLE = False
     DockerSandbox = None
 
+# Try to import PluginManager, fallback if not available
+try:
+    from plugin_manager import PluginManager
+    PLUGINS_AVAILABLE = True
+except ImportError:
+    PLUGINS_AVAILABLE = False
+    PluginManager = None
+
 
 class ToolExecutionResult:
     """Result of a tool execution."""
@@ -418,23 +426,35 @@ class WebFetcher:
 
 class Toolbox:
     """
-    Main toolbox that combines all tools.
+    Main toolbox that combines all tools and plugins.
     """
     
-    def __init__(self, workspace: str = "/tmp/arbiter_workspace", use_docker: bool = None):
+    def __init__(self, workspace: str = "/tmp/arbiter_workspace", use_docker: bool = None, enable_plugins: bool = True):
         self.workspace = workspace
         self.shell = ShellExecutor(workspace, use_docker=use_docker)
         self.files = FileManager(workspace)
         self.web = WebFetcher()
+        
+        # Plugin manager
+        self.plugin_manager = None
+        if enable_plugins and PLUGINS_AVAILABLE:
+            try:
+                self.plugin_manager = PluginManager(workspace)
+                loaded = self.plugin_manager.load_all_plugins()
+                print(f"🔌 Loaded {loaded} plugin(s)")
+            except Exception as e:
+                print(f"⚠️ Plugin manager failed to initialize: {e}")
+                self.plugin_manager = None
     
     def execute_tool(self, tool_name: str, **kwargs) -> ToolExecutionResult:
         """
-        Execute a tool by name.
+        Execute a tool by name (core tools or plugins).
         
         Args:
-            tool_name: Name of tool (shell, read_file, write_file, etc.)
+            tool_name: Name of tool (shell, read_file, write_file, etc.) or plugin
             **kwargs: Tool-specific arguments
         """
+        # Core tools
         tool_map = {
             "shell": lambda: self.shell.execute(kwargs.get("command", "")),
             "read_file": lambda: self.files.read_file(kwargs.get("filepath", "")),
@@ -451,14 +471,27 @@ class Toolbox:
             )
         }
         
-        if tool_name not in tool_map:
+        # Check core tools first
+        if tool_name in tool_map:
+            return tool_map[tool_name]()
+        
+        # Check plugins
+        if self.plugin_manager and self.plugin_manager.has_plugin(tool_name):
+            result = self.plugin_manager.execute_plugin(tool_name, **kwargs)
+            # Convert PluginResult to ToolExecutionResult
             return ToolExecutionResult(
-                success=False,
-                output="",
-                error=f"❌ Unknown tool: {tool_name}"
+                success=result.success,
+                output=result.output,
+                error=result.error,
+                data=result.data
             )
         
-        return tool_map[tool_name]()
+        # Tool not found
+        return ToolExecutionResult(
+            success=False,
+            output="",
+            error=f"❌ Unknown tool: {tool_name}"
+        )
 
 
 # Example usage
