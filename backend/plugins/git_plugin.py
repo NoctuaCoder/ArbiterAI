@@ -5,7 +5,10 @@ Version control operations with state management.
 Phase 1: Local State Management
 - git init, status, add, commit, log
 - Repository state tracking
-- Intelligent commit messages
+
+Phase 2: Remote Operations
+- git clone, push, pull, fetch
+- Remote repository management
 """
 
 import subprocess
@@ -34,7 +37,9 @@ class GitPlugin(ArbiterPlugin):
     - Track repository state
     - Stage and commit changes
     - View commit history
-    - Generate intelligent commit messages
+    - Clone remote repositories
+    - Push/pull to/from remotes
+    - Manage remote connections
     """
     
     def __init__(self):
@@ -101,7 +106,12 @@ class GitPlugin(ArbiterPlugin):
             "log": self._git_log,
             "diff": self._git_diff,
             "branch": self._git_branch,
-            "checkout": self._git_checkout
+            "checkout": self._git_checkout,
+            "clone": self._git_clone,
+            "push": self._git_push,
+            "pull": self._git_pull,
+            "fetch": self._git_fetch,
+            "remote": self._git_remote
         }
         
         if action not in actions:
@@ -441,6 +451,263 @@ class GitPlugin(ArbiterPlugin):
                 error=f"Failed to checkout: {str(e)}"
             )
     
+    def _git_clone(self, url: str, directory: str = None, **kwargs) -> PluginResult:
+        """Clone remote repository."""
+        if not url:
+            return PluginResult(
+                success=False,
+                error="Repository URL is required"
+            )
+        
+        try:
+            target = directory or self.workspace_path
+            
+            result = subprocess.run(
+                ["git", "clone", url, str(target)],
+                capture_output=True,
+                text=True,
+                timeout=300  # 5 minute timeout for large repos
+            )
+            
+            if result.returncode == 0:
+                # Update repo path if cloned to workspace
+                if not directory:
+                    self.repo_path = Path(target)
+                
+                return PluginResult(
+                    success=True,
+                    output=f"✅ Cloned repository from {url}"
+                )
+            else:
+                return PluginResult(
+                    success=False,
+                    error=result.stderr
+                )
+        except subprocess.TimeoutExpired:
+            return PluginResult(
+                success=False,
+                error="Clone operation timed out (>5 minutes)"
+            )
+        except Exception as e:
+            return PluginResult(
+                success=False,
+                error=f"Failed to clone: {str(e)}"
+            )
+    
+    def _git_push(self, remote: str = "origin", branch: str = None, **kwargs) -> PluginResult:
+        """Push commits to remote."""
+        try:
+            # Get current branch if not specified
+            if not branch:
+                branch_result = subprocess.run(
+                    ["git", "branch", "--show-current"],
+                    cwd=self.repo_path,
+                    capture_output=True,
+                    text=True
+                )
+                branch = branch_result.stdout.strip()
+            
+            if not branch:
+                return PluginResult(
+                    success=False,
+                    error="No branch specified and could not detect current branch"
+                )
+            
+            result = subprocess.run(
+                ["git", "push", remote, branch],
+                cwd=self.repo_path,
+                capture_output=True,
+                text=True,
+                timeout=300
+            )
+            
+            if result.returncode == 0:
+                return PluginResult(
+                    success=True,
+                    output=f"✅ Pushed to {remote}/{branch}\n{result.stdout}"
+                )
+            else:
+                return PluginResult(
+                    success=False,
+                    error=result.stderr
+                )
+        except subprocess.TimeoutExpired:
+            return PluginResult(
+                success=False,
+                error="Push operation timed out (>5 minutes)"
+            )
+        except Exception as e:
+            return PluginResult(
+                success=False,
+                error=f"Failed to push: {str(e)}"
+            )
+    
+    def _git_pull(self, remote: str = "origin", branch: str = None, **kwargs) -> PluginResult:
+        """Pull changes from remote."""
+        try:
+            # Get current branch if not specified
+            if not branch:
+                branch_result = subprocess.run(
+                    ["git", "branch", "--show-current"],
+                    cwd=self.repo_path,
+                    capture_output=True,
+                    text=True
+                )
+                branch = branch_result.stdout.strip()
+            
+            if not branch:
+                return PluginResult(
+                    success=False,
+                    error="No branch specified and could not detect current branch"
+                )
+            
+            result = subprocess.run(
+                ["git", "pull", remote, branch],
+                cwd=self.repo_path,
+                capture_output=True,
+                text=True,
+                timeout=300
+            )
+            
+            if result.returncode == 0:
+                return PluginResult(
+                    success=True,
+                    output=f"✅ Pulled from {remote}/{branch}\n{result.stdout}"
+                )
+            else:
+                return PluginResult(
+                    success=False,
+                    error=result.stderr
+                )
+        except subprocess.TimeoutExpired:
+            return PluginResult(
+                success=False,
+                error="Pull operation timed out (>5 minutes)"
+            )
+        except Exception as e:
+            return PluginResult(
+                success=False,
+                error=f"Failed to pull: {str(e)}"
+            )
+    
+    def _git_fetch(self, remote: str = "origin", **kwargs) -> PluginResult:
+        """Fetch updates from remote."""
+        try:
+            result = subprocess.run(
+                ["git", "fetch", remote],
+                cwd=self.repo_path,
+                capture_output=True,
+                text=True,
+                timeout=300
+            )
+            
+            if result.returncode == 0:
+                return PluginResult(
+                    success=True,
+                    output=f"✅ Fetched from {remote}\n{result.stdout or 'Up to date'}"
+                )
+            else:
+                return PluginResult(
+                    success=False,
+                    error=result.stderr
+                )
+        except subprocess.TimeoutExpired:
+            return PluginResult(
+                success=False,
+                error="Fetch operation timed out (>5 minutes)"
+            )
+        except Exception as e:
+            return PluginResult(
+                success=False,
+                error=f"Failed to fetch: {str(e)}"
+            )
+    
+    def _git_remote(self, action: str = "list", name: str = None, url: str = None, **kwargs) -> PluginResult:
+        """Manage remote repositories."""
+        try:
+            if action == "list":
+                # List remotes
+                result = subprocess.run(
+                    ["git", "remote", "-v"],
+                    cwd=self.repo_path,
+                    capture_output=True,
+                    text=True
+                )
+                
+                if result.stdout.strip():
+                    output = f"🌐 Remotes:\n{result.stdout}"
+                else:
+                    output = "No remotes configured"
+                
+                return PluginResult(
+                    success=True,
+                    output=output
+                )
+            
+            elif action == "add":
+                # Add remote
+                if not name or not url:
+                    return PluginResult(
+                        success=False,
+                        error="Both 'name' and 'url' are required to add remote"
+                    )
+                
+                result = subprocess.run(
+                    ["git", "remote", "add", name, url],
+                    cwd=self.repo_path,
+                    capture_output=True,
+                    text=True
+                )
+                
+                if result.returncode == 0:
+                    return PluginResult(
+                        success=True,
+                        output=f"✅ Added remote '{name}': {url}"
+                    )
+                else:
+                    return PluginResult(
+                        success=False,
+                        error=result.stderr
+                    )
+            
+            elif action == "remove":
+                # Remove remote
+                if not name:
+                    return PluginResult(
+                        success=False,
+                        error="Remote 'name' is required to remove"
+                    )
+                
+                result = subprocess.run(
+                    ["git", "remote", "remove", name],
+                    cwd=self.repo_path,
+                    capture_output=True,
+                    text=True
+                )
+                
+                if result.returncode == 0:
+                    return PluginResult(
+                        success=True,
+                        output=f"✅ Removed remote: {name}"
+                    )
+                else:
+                    return PluginResult(
+                        success=False,
+                        error=result.stderr
+                    )
+            
+            else:
+                return PluginResult(
+                    success=False,
+                    error=f"Unknown remote action: {action}. Use 'list', 'add', or 'remove'"
+                )
+        
+        except Exception as e:
+            return PluginResult(
+                success=False,
+                error=f"Failed to manage remotes: {str(e)}"
+            )
+    
     def validate_input(self, **kwargs) -> tuple[bool, str]:
         """Validate git operation input."""
         action = kwargs.get("action")
@@ -463,12 +730,15 @@ class GitPlugin(ArbiterPlugin):
             "name": "git",
             "description": "Git version control operations for repository management",
             "parameters": {
-                "action": "Git action (init, status, add, commit, log, diff, branch, checkout)",
+                "action": "Git action (init, status, add, commit, log, diff, branch, checkout, clone, push, pull, fetch, remote)",
                 "message": "Commit message (for commit action)",
                 "files": "Files to stage (for add action, default: '.')",
                 "count": "Number of commits to show (for log action, default: 5)",
-                "branch": "Branch name (for branch/checkout actions)",
-                "create": "Create new branch (for checkout action)"
+                "branch": "Branch name (for branch/checkout/push/pull actions)",
+                "create": "Create new branch (for checkout action)",
+                "url": "Repository URL (for clone/remote actions)",
+                "remote": "Remote name (for push/pull/fetch actions, default: 'origin')",
+                "directory": "Target directory (for clone action)"
             },
             "examples": [
                 "Initialize repository: action='init'",
@@ -478,7 +748,13 @@ class GitPlugin(ArbiterPlugin):
                 "View history: action='log', count=10",
                 "Show changes: action='diff'",
                 "Create branch: action='branch', name='feature/new'",
-                "Switch branch: action='checkout', branch='main'"
+                "Switch branch: action='checkout', branch='main'",
+                "Clone repository: action='clone', url='https://github.com/user/repo'",
+                "Push to remote: action='push', remote='origin', branch='main'",
+                "Pull from remote: action='pull', remote='origin', branch='main'",
+                "Fetch updates: action='fetch', remote='origin'",
+                "List remotes: action='remote'",
+                "Add remote: action='remote', action='add', name='origin', url='https://...'"
             ]
         }
 
