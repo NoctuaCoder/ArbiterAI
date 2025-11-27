@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArbiterAI Celestial</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Animated Star Background -->
+    <div class="stars-container">
+        <div class="star star-1"></div>
+        <div class="star star-2"></div>
+        <div class="star star-3"></div>
+        <div class="star star-4"></div>
+        <div class="star star-5"></div>
+        <div class="star star-6"></div>
+        <div class="star star-7"></div>
+        <div class="star star-8"></div>
+    </div>
+
+    <!-- Custom Titlebar -->
+    <div class="titlebar">
+        <div class="titlebar-drag">
+            <div class="titlebar-icon">🦉</div>
+            <div class="titlebar-title">ArbiterAI Celestial</div>
+        </div>
+        <div class="titlebar-controls">
+            <button class="titlebar-button" id="minimize-btn">
+                <svg width="12" height="12" viewBox="0 0 12 12">
+                    <line x1="0" y1="6" x2="12" y2="6" stroke="currentColor" stroke-width="1"/>
+                </svg>
+            </button>
+            <button class="titlebar-button" id="maximize-btn">
+                <svg width="12" height="12" viewBox="0 0 12 12">
+                    <rect x="1" y="1" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1"/>
+                </svg>
+            </button>
+            <button class="titlebar-button close-btn" id="close-btn">
+                <svg width="12" height="12" viewBox="0 0 12 12">
+                    <line x1="1" y1="1" x2="11" y2="11" stroke="currentColor" stroke-width="1"/>
+                    <line x1="11" y1="1" x2="1" y2="11" stroke="currentColor" stroke-width="1"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="app-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-indicator">
+                <div class="status-dot" id="status-dot"></div>
+                <span id="status-text">Connecting...</span>
+            </div>
+            <div class="connection-info">
+                <span id="connection-url">ws://localhost:8000/ws</span>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container">
+            <div class="messages" id="messages">
+                <div class="welcome-message">
+                    <div class="welcome-icon">🌌</div>
+                    <h2>Welcome to ArbiterAI Celestial</h2>
+                    <p>Your AI coding assistant with cosmic powers</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-container">
+            <div class="input-wrapper">
+                <textarea 
+                    id="message-input" 
+                    placeholder="Ask ArbiterAI to execute code, build projects, or fix errors..."
+                    rows="1"
+                ></textarea>
+                <button id="send-btn" class="send-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

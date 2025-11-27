@@ -1,0 +1,40 @@
+{
+    "name": "arbiterai-celestial",
+    "version": "1.0.0",
+    "description": "ArbiterAI - Celestial Desktop App",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "build": "electron-builder"
+    },
+    "keywords": [
+        "electron",
+        "arbiterai",
+        "ai",
+        "celestial"
+    ],
+    "author": "NoctuaCoder",
+    "license": "MIT",
+    "devDependencies": {
+        "electron": "^28.0.0",
+        "electron-builder": "^24.9.1"
+    },
+    "build": {
+        "appId": "com.noctuacoder.arbiterai",
+        "productName": "ArbiterAI Celestial",
+        "directories": {
+            "output": "dist"
+        },
+        "files": [
+            "**/*",
+            "!node_modules/**/*"
+        ],
+        "linux": {
+            "target": [
+                "AppImage",
+                "deb"
+            ],
+            "category": "Development"
+        }
+    }
+}
